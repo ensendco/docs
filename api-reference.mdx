@@ -1,0 +1,278 @@
+---
+title: "API Reference for Email Broadcast"
+sidebarTitle: "Reference"
+---
+
+<Tabs>
+  <Tab title="Initial Broadcast Batch">
+    <CodeGroup>
+
+    ```typescript Javascript SDK highlight={2,8-9,12-13}
+    const ensend = new Client({
+      secret: "your_project_secret",
+    });
+    
+    const { data, error } = await ensend.SendApi.SendMailBroadcast({
+      subject: "My Broadcast",
+      sender: {
+        name: "your_identity_name",
+        address: "your_sender_identity"
+      },
+      recipients: [{
+        name: "your_recipient_name",
+        address: "your_recipient_address"
+      }],
+       message: "<b>It works 🎉</b>",
+      // ...see additional fields below
+    });
+    ```
+
+    ```go Golang SDK
+    import "github.com/express-labs/ensend-client-go"
+    client := ensend.New(option.WithProjectSecret("your_project_secret"))
+    ```
+
+    ```shellscript Rest API highlight={2,7-8,11-12}
+    curl -X POST 'https://api.ensend.co/send/mail/broadcast' \
+      -H 'Authorization: Bearer <your_project_secret>' \
+      -H 'Content-Type: application/json' \
+      -d '{
+        "subject": "My Broadcast",
+        "sender": {
+          "name": "your_identity_name",
+          "address": "your_sender_identity"
+        },
+        "recipients": [{
+          "name": "your_recipient_name",
+          "address": "your_recipient_address"
+        }],
+        "message": "<b>It works 🎉</b>"
+        # ...see additional fields below
+      }'
+    ```
+
+    </CodeGroup>
+
+    ## Request Body
+
+    <ParamField path="subject" type="string" required>
+      The subject line of the email as it should appear in recipients’ inbox.
+    </ParamField>
+
+    <ParamField path="preheader" type="string (optional)">
+      The text that appears below the subject line in notifications from inbox clients (like Gmail, Outlook, Apple Mail). This provides a second line for upselling and helps to increase open rates.
+    </ParamField>
+
+    <ParamField path="sender" type="object" required>
+      <Expandable title="Child Attributes" defaultOpen>
+        <ParamField path="name" type="string">
+          The name of the sender as it should appear in recipients' inbox.
+
+          If a name is not provided, the `username` part of the sender address is used. Example: `hello` becomes the sender name for [hello@ensend.co](mailto:hello@ensend.co).
+        </ParamField>
+
+        <ParamField path="address" type="string" required>
+          The email address of the sender as it should appear in recipients' inbox.
+
+          The sender address can any of the sender identities available to your project. [Learn more about creating a sender identity.](/credentials#sender-identities)
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField path="message" type="string (optional if using template)">
+      The body of the email as it should appear in recipients’ inbox. This can either be in `plaintext` or `html` format.
+    </ParamField>
+
+    <ParamField path="template" type="object (optional if using message)">
+      <Expandable title="Child Attributes" defaultOpen>
+        <ParamField path="ref" type="string" required>
+          This is a reference to any email template available in your project.
+
+          You can only obtain a `ref` after creating an email template in your project. [Learn more about creating a template.](#)
+        </ParamField>
+
+        <ParamField path="variables" type="object (optional)">
+          A key-value pair that assign values to template variables. These variable are treated as global variables and are applied to every message.
+
+          When variables are specified for each recipient, these are treated as a fallback values.
+
+          ```jsonc
+          // Example
+          {
+          	"displayPhoto": "https://link-to-avatar.png",
+          	"citizenship": "Global Citizen"
+          }
+          ```
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField path="recipients" type="object[] (optional if using sources)">
+      This is the list of users the broadcast will be delivered to. Recipients can be added in batches, `limited to 250 recipients` per batch.
+
+      If you're avoiding sending in batches, check out [adding a recipient source](#sources) to a broadcast.
+
+      <Expandable title="Child Attributes" defaultOpen>
+        <ParamField path="name" type="string">
+          This is the name of the recipient as it will in your audience list. This name is also used when deriving traits like `{{profile.firstName}}` , so you want to ensure it is accurate.
+
+          If a name is not provided, the `username` part of the recipient address is used.<br />Example: `tenotea` becomes the recipient name for [tenotea@ensend.co](mailto:hello@ensend.co).
+        </ParamField>
+
+        <ParamField path="address" type="string">
+          The email address of the recipient the broadcast message will be delivered to. This can be any email address which you have received explicit permission to send an email to.
+        </ParamField>
+
+        <ParamField path="variables" type="object">
+          A key-value pair that assign values to template variables. These variables override global variables and are applied only the corresponding recipient, unlocking message personalization at scale.
+
+          ```jsonc
+          // Example
+          {
+          	"displayPhoto": "https://link-to-profile-picture.png",
+          	"citizenship": "Brazilian Citizen"
+          }
+          ```
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField path="sources" type="object[] (optional if using recipients)">
+      Sources point to pre-existing list of users. This unlocks sending a broadcast to thousands of recipients with a single . Audience groups and CSV files are supported as of today.  More source options will be added to aid in building custom and flexible broadcast pipelines.
+
+      <Tabs>
+        <Tab title="Audience Groups">
+          <Expandable title="Child Attributes" defaultOpen>
+            <ParamField path="ref" type="string" required>
+              Enter a description
+            </ParamField>
+
+            <ParamField path="actionOnExistingTrait" type="preserve | override">
+              Enter a description
+            </ParamField>
+
+            <ParamField path="actionOnExistingProfile" type="preserve | override">
+              Enter a description
+            </ParamField>
+
+            <ParamField path="includeUnsubscribed" type="boolean">
+              Enter a description
+            </ParamField>
+          </Expandable>
+        </Tab>
+        <Tab title="CSV File">
+          <Expandable title="Child Attributes" defaultOpen>
+            <ParamField path="label" type="string" required>
+              The name to be used for this source. All recipients added from this source will be tagged with the label.
+            </ParamField>
+
+            <ParamField path="url" type="string">
+              Link to the CSV file to be used as the recipients source of the broadcast. We only accept urls that allow byte-range download (e.g S3 and R2). C with your file hosting provider to confirm.
+            </ParamField>
+
+            <ParamField path="columnMappings" type="object">
+              Column mappings define how columns in CSV files should be assigned to traits in the broadcast. This is useful when the column headings are different from trait names.
+            </ParamField>
+          </Expandable>
+        </Tab>
+      </Tabs>
+    </ParamField>
+
+    <ParamField path="replyAddress" type="string">
+      Enter a description
+    </ParamField>
+
+    <ParamField path="attachments" type="object[]">
+      <Expandable title="Child Attributes" defaultOpen>
+        <ParamField path="name" type="string">
+          Enter a description
+        </ParamField>
+
+        <ParamField path="url" type="string (optional if using content)">
+          Enter a description
+        </ParamField>
+
+        <ParamField path="content" type="string (optional if using url)">
+          Enter a description
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField path="options" type="object">
+      <Expandable title="Child Attributes" defaultOpen>
+        <ParamField path="acquiringAudience" type="string">
+          Enter a description
+        </ParamField>
+
+        <ParamField path="scheduleFor" type="Date">
+          Enter a description
+        </ParamField>
+
+        <ParamField path="storeContent" type="boolean">
+          whether the rendered email content is retained on the backend after sending — useful for audit trails and resending, but worth turning off for highly sensitive one-off content you don't want persisted.
+        </ParamField>
+      </Expandable>
+    </ParamField>
+  </Tab>
+  <Tab title="Subsequent Broadcast Batch">
+    <CodeGroup>
+
+    ```typescript Javascript SDK highlight={2,8-9}
+    const ensend = new Client({
+      secret: "your_project_secret",
+    });
+    
+    const { data, error } = await ensend.SendApi.SendExistingMailBroadcast({
+      broadcastRef: "your_broadcast_ref",
+      recipients: [{
+        name: "your_recipient_name",
+        address: "your_recipient_address"
+      }]
+    });
+    ```
+
+    ```text Golang SDK
+    ```
+
+    ```text Rest API
+    ```
+
+    </CodeGroup>
+
+    ## Request Body
+
+    <ParamField path="broadcastRef" type="string" required>
+      This is the reference to a broadcast that has already been created. You can obtain your `broadcastRef` by sending an initial broadcast batch or copying the ref from your project dashboard.
+    </ParamField>
+
+    <ParamField path="recipients" type="object[] (optional if using sources)">
+      This is the list of users the broadcast will be delivered to. Recipients can be added in batches, `limited to 250 recipients` per batch.
+
+      If you're avoiding sending in batches, check out [adding a recipient source](#sources) to a broadcast.
+
+      <Expandable title="Child Attributes" defaultOpen>
+        <ParamField path="name" type="string">
+          This is the name of the recipient as it will in your audience list. This name is also used when deriving traits like `{{profile.firstName}}` , so you want to ensure it is accurate.
+
+          If a name is not provided, the `username` part of the recipient address is used.<br />Example: `tenotea` becomes the recipient name for [tenotea@ensend.co](mailto:hello@ensend.co).
+        </ParamField>
+
+        <ParamField path="address" type="string">
+          The email address of the recipient the broadcast message will be delivered to. This can be any email address which you have received explicit permission to send an email to.
+        </ParamField>
+
+        <ParamField path="variables" type="object">
+          A key-value pair that assign values to template variables. These variables override global variables and are applied only the corresponding recipient, unlocking message personalization at scale.
+
+          ```jsonc
+          // Example
+          {
+          	"displayPhoto": "https://link-to-profile-picture.png",
+          	"citizenship": "Brazilian Citizen"
+          }
+          ```
+        </ParamField>
+      </Expandable>
+    </ParamField>
+  </Tab>
+</Tabs>

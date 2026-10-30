@@ -1,0 +1,204 @@
+---
+title: "Quickstart"
+description: "Integrate Ensend into your applications using the official developer SDKs and API."
+icon: "terminal"
+---
+
+## Overview
+
+Ensend ships primarily as a dependency-free REST API and supports requests from any valid HTTP Client. To enhance your developer experience, we have provided SDKs for major programming languages.
+
+This guide shows how to install and configure these SDKs or your http client to begin using ensend in your application
+
+<Note>
+  Alternatively, you can send emails using our [SMTP Server](/smtp-server).
+</Note>
+
+<Tabs>
+  <Tab title="Typescript">
+    <Steps>
+      <Step title="Install from the package manager">
+        <CodeGroup>
+
+        ```shellscript bun
+        bun add ensend@latest
+        ```
+
+        ```shellscript yarn
+        yarn add ensend@latest
+        ```
+
+        ```shellscript npm
+        npm install ensend@latest
+        ```
+
+        ```shellscript pnpm
+        pnpm install ensend@latest
+        ```
+
+        </CodeGroup>
+      </Step>
+      <Step title="Initialize the SDK">
+        ```typescript ensend.config.ts highlight={4}
+        import { Client } from "ensend"
+        
+        const ensend = new Client({
+          secret: "your_project_secret",
+        });
+        
+        export ensend
+        ```
+      </Step>
+      <Step title="Send your first message">
+        Send an Email message, SMS, WhatsApp message or push notification
+
+        <CodeGroup>
+
+        ```typescript Email Message highlight={5-6,9-10}
+        const { data, error } = await ensend.SendApi.SendMailMessage({
+          subject: "Ensend Test Email",
+          message: "<b>It works 🎉</b>",
+          sender: {
+            name: "your_identity_name",
+            address: "your_sender_identity"
+          },
+          recipients: {
+            name: "your_recipient_name",
+            address: "your_recipient_address"
+          }
+        });
+        ```
+
+        ```typescript SMS Message
+        // coming soon
+        ```
+
+        ```typescript WhatsApp Message
+        // coming soon
+        ```
+
+        ```typescript Push Notification
+        // coming soon
+        ```
+
+        </CodeGroup>
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Go">
+    <Steps>
+      <Step title="Install from package manager">
+        ```shellscript
+        go get github.com/ensendco/ensend-go
+        ```
+      </Step>
+      <Step title="Initialize the SDK">
+        ```go highlight={2}
+        import "github.com/express-labs/ensend-client-go"
+        client := ensend.New(option.WithProjectSecret("your_project_secret"))
+        ```
+      </Step>
+      <Step title="Send your first message">
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Rest API">
+    <Steps>
+      <Step title="Grab the base url">
+        ```shellscript API BASEURL
+        https://api.ensend.co/send/mail
+        ```
+      </Step>
+      <Step title="Set your request headers">
+        <CodeGroup>
+
+        ```javascript Javascript highlight={4,11-12,15-16}
+        const baseurl = "https://api.ensend.co/send/mail"
+        
+        const requestHeaders = new Headers();
+        requestHeaders.append("Authorization", "Bearer your_project_secret");
+        requestHeaders.append("Content-Type", "application/json");
+        
+        const requestBody = JSON.stringify({
+          subject: "Ensend Test Email",
+          message: "<b>It works 🎉</b>",
+          sender: {
+            name: "your_identity_name",
+            address: "your_sender_identity"
+          },
+          recipients: {
+            name: "your_recipient_name",
+            address: "your_recipient_address"
+          }
+        });
+        
+        const response = await fetch(baseurl, {
+          method: "POST",
+          headers: requestHeaders,
+          body: requestBody
+        });
+        
+        const data = await response.json();
+        ```
+
+        ```python Python highlight={4,12-13,16-17}
+        baseurl = "https://api.ensend.co/send/mail"
+        
+        request_headers = {
+          'Authorization': 'Bearer your_project_secret',
+          'Content-Type': 'application/json'
+        }
+        
+        request_body = {
+          "subject": "Ensend Test Email",
+          "message": "<b>It works 🎉</b>",
+          "sender": {
+            "name": "your_identity_name",
+            "address": "your_sender_identity"
+          },
+          "recipients": {
+            "name": "your_recipient_name",
+            "address": "your_recipient_address"
+          }
+        }
+        
+        response = requests.post(
+          baseurl,
+          headers=request_headers,
+          json=request_body
+        )
+        
+        data = response.json()
+        ```
+
+        ```shellscript cURL highlight={2,8-9,12-13}
+        curl -XPOST 'https://api.ensend.co/send/mail' \
+          -H 'Authorization: Bearer your_project_secret' \
+          -H 'Content-Type: application/json' \
+          -d '{
+            "subject": "Ensend Test Email",
+            "message": "<b>It works 🎉</b>",
+            "sender": {
+              "name": "your_identity_name",
+              "address": "your_sender_identity"
+            },
+            "recipients": {
+              "name": "your_recipient_name",
+              "address": "your_recipient_address"
+            }
+          }'
+        
+        ```
+
+        </CodeGroup>
+      </Step>
+      <Step title="Send your api request">
+        Send an email, sms, whatsapp or push notification
+
+        <Check>
+          All set here. You are  ready to [obtain your project secret](/authentication)
+        </Check>
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>

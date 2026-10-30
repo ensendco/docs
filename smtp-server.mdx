@@ -1,0 +1,139 @@
+---
+title: "SMTP Server"
+icon: "server"
+description: "Send emails with Ensend's SMTP server"
+---
+
+## Overview
+
+In addition to the SDKs and REST API, Ensend supports sending emails over SMTP. This is useful when you're working with frameworks, platforms, or tools that have built-in SMTP support such as Laravel, Django, Rails, or Nodemailer. If your stack already knows how to talk SMTP, you can point it at Ensend and start sending with no additional integration work.
+
+## SMTP Credentials
+
+To connect to Ensend's SMTP server, you'll need to obtain your [API credentials](/credentials) from your project dashboard. The following configuration is used to connect to our smtp server for mail delivery.
+
+<ParamField path="host" type="smtp.ensend.co">
+  This is the hostname of Ensend's SMTP Server.
+</ParamField>
+
+<ParamField path="port" type="587 (recommended) or 465">
+  Ensend's smtp server supports connections over  `STARTTLS` on port `587` and `SSL` on port `465`. We recommend using port `587` for best compatibility with smtp clients
+</ParamField>
+
+<ParamField path="username" type="your_public_key">
+  Your project's public key is your SMTP username. Navigate to `Workspace > Project > Credentials` to view your public key.
+</ParamField>
+
+<ParamField path="password" type="your_project_secret">
+  Any of your project's sandbox and live secrets is used as your SMTP password. Navigate to `Workspace > Project > Credentials` to view your project secrets. Using a sandbox key will send your messages in sandbox mode. See live [Live keys vs Sandbox keys](https://docs.ensend.co/credentials#live-secrets-vs-sandbox-secrets)
+</ParamField>
+
+<ParamField path="from" type="your_sender_identity">
+  The from address is the address sending the message. This is any of your project sender identities. Navigate to `Workspace > Project > Identies` to view your project identities. [Learn more here](https://docs.ensend.co/credentials#sender-identities)
+</ParamField>
+
+## Configuration Examples
+
+<CodeGroup>
+
+```typescript Node.js highlight={8-9,14-15}
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.ensend.co",
+  port: 587,
+  secure: false, // set true if using SSL or port 465
+  auth: {
+    user: "your_public_key",
+    pass: "your_project_secret",
+  },
+});
+
+await transporter.sendMail({
+  from: '"your_identity_name" <your_sender_identity>',
+  to: "your_recipient_address",
+  subject: "Ensend Test Email",
+  html: "<b>It works 🎉</b>",
+});
+```
+
+```python Python highlight={7-8,14}
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+msg = MIMEMultipart("alternative")
+msg["Subject"] = "Ensend Test Email"
+msg["From"] = "your_sender_identity"
+msg["To"] = "your_recipient_address"
+
+msg.attach(MIMEText("<b>It works 🎉</b>", "html"))
+
+with smtplib.SMTP("smtp.ensend.co", 587) as server:
+    server.starttls()
+    server.login("your_public_key", "your_project_secret")
+    server.sendmail(msg["From"], msg["To"], msg.as_string())
+```
+
+```php PHP highlight={7-8,12-13}
+use PHPMailer\PHPMailer\PHPMailer;
+
+$mail = new PHPMailer(true);
+$mail->isSMTP();
+$mail->Host       = 'smtp.ensend.co';
+$mail->SMTPAuth   = true;
+$mail->Username   = 'your_public_key';
+$mail->Password   = 'your_project_secret';
+$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+$mail->Port       = 587;
+
+$mail->setFrom('your_sender_identity', 'your_identity_name');
+$mail->addAddress('your_recipient_address');
+$mail->isHTML(true);
+$mail->Subject = 'Ensend Test Email';
+$mail->Body    = '<b>It works 🎉</b>';
+
+$mail->send();
+```
+
+```go Golang highlight={11-12,16-17}
+package main
+
+import (
+	"net/smtp"
+	"strings"
+)
+
+func main() {
+	host := "smtp.ensend.co"
+	port := "587"
+	username := "your_public_key"
+	password := "your_project_secret"
+
+	auth := smtp.PlainAuth("", username, password, host)
+
+	from := "your_sender_identity"
+	to := []string{"your_recipient_address"}
+
+	headers := map[string]string{
+		"From":         from,
+		"To":           to[0],
+		"Subject":      "Ensend Test Email",
+		"MIME-Version": "1.0",
+		"Content-Type": `text/html; charset="UTF-8"`,
+	}
+
+	var msg strings.Builder
+	for k, v := range headers {
+		msg.WriteString(k + ": " + v + "\r\n")
+	}
+	msg.WriteString("\r\n<b>It works 🎉</b>")
+
+	err := smtp.SendMail(host+":"+port, auth, from, to, []byte(msg.String()))
+	if err != nil {
+		panic(err)
+	}
+}
+```
+
+</CodeGroup>

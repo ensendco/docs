@@ -1,0 +1,139 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Ensend Documentation",
+  "colors": {
+    "primary": "#F2B311",
+    "light": "#F2B311",
+    "dark": "#F2B311"
+  },
+  "favicon": "/images/ensend-icon-logo.png",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Send",
+        "hidden": true
+      },
+      {
+        "tab": "The Send API",
+        "icon": "book-bookmark",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "index",
+              "credentials",
+              "quickstart",
+              "smtp-server"
+            ]
+          },
+          {
+            "group": "Email Message",
+            "icon": "mailbox-flag-up",
+            "expanded": true,
+            "pages": [
+              "email-message",
+              "sendingemail-templating",
+              "email-attachments",
+              "email-calendar-invites",
+              "email-reference"
+            ]
+          },
+          {
+            "group": "Email Broadcast",
+            "icon": "tower-broadcast",
+            "expanded": true,
+            "pages": [
+              "email-brodcast",
+              "batching",
+              "reference"
+            ]
+          },
+          {
+            "group": "Domains",
+            "hidden": true,
+            "pages": [
+              "identities",
+              "identities/connect-domain"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/images/ensend-wordmark-padded.png",
+    "dark": "/images/ensend-wordmark-padded.png",
+    "href": "https://ensend.co"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Discord",
+        "href": "https://discord.gg/DfAFqVgQY5"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://ensend.co/signin"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/ensendcompany",
+      "github": "https://github.com/prime-labs"
+    },
+    "links": [
+      {
+        "header": "Products",
+        "items": [
+          {
+            "label": "Ensend Mail",
+            "href": "https://ensend.co/mail"
+          }
+        ]
+      }
+    ]
+  },
+  "description": "Ensend API Documentation for Email, SMS, WhatsApp and Push Messages and Broadcast",
+  "appearance": {
+    "strict": true,
+    "default": "dark"
+  },
+  "background": {
+    "decoration": "windows",
+    "color": {
+      "dark": "#0B010D",
+      "light": "#0B010D"
+    }
+  },
+  "metadata": {
+    "timestamp": true
+  },
+  "interaction": {
+    "drilldown": true
+  },
+  "seo": {
+    "indexing": "navigable"
+  },
+  "search": {
+    "prompt": "Explore Ensend"
+  },
+  "thumbnails": {
+    "appearance": "dark",
+    "background": "/images/ensend-products-banner.png"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": "dark"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Inter"
+    },
+    "body": {
+      "family": "Geist"
+    }
+  }
+}
