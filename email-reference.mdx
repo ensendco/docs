@@ -164,5 +164,9 @@ curl -X POST 'https://api.ensend.co/send/mail' \
     <ParamField path="acquiringAudience" type="string">
       Provide a reference to the audience group recipients of this message should be added to during recipient indexing. Your audience ref can be gotten through the Ensend dashboard. This is useful for adding users to segments.
     </ParamField>
+
+    <ParamField path="idempotencyKey" type="string">
+      Provide a unique id to us (think uuid), an it will be used to dedupe your send attempts and prevent double sends.
+    </ParamField>
   </Expandable>
 </ParamField>
